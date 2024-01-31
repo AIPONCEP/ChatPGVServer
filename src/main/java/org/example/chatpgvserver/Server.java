@@ -8,10 +8,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonParser;
 import org.example.chatpgvserver.models.objects.MiObjeto;
-
-import com.google.gson.JsonObject;
 
 import static java.lang.System.out;
 
@@ -34,7 +31,7 @@ public class Server {
                 String json = in.readLine();
                 switch (comando){
                     case "Insertar":
-                        getAndSend(json);
+                        System.out.println(getData(json).getNombre());
                         break;
 
 
@@ -51,18 +48,11 @@ public class Server {
         }
     }
 
-    public static void getAndSend(String json){
+    public static MiObjeto getData(String json){
         // Convierte el JSON a un objeto Java
         Gson gson = new Gson();
         MiObjeto objeto = gson.fromJson(json, MiObjeto.class);
-
-        // Realiza alguna operación con el objeto (en este caso, solo lo imprime)
-        out.println("Objeto recibido del cliente: " + json);
-
-        // Envia una respuesta al cliente
-        JsonObject jsonResponse = new JsonObject();
-        jsonResponse.addProperty("response", "Mensaje recibido correctamente");
-        out.println("jsonResponse");
+        return objeto;
     }
 }
 
