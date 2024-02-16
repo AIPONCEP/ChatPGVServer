@@ -80,19 +80,15 @@ public class DBconnection {
     /**
      * Método para ejecutar consultas de cambios (INSERT, UPDATE, DELETE) en la base de datos.
      * @param sql - Consulta SQL a ejecutar.
-     * @param values - Valores de los parámetros de la consulta.
      * @return boolean - True si la consulta se realizó con éxito, False en caso contrario.
      */
-    public static boolean ExecuteChangesSql(String sql, Object[] values) {
+    public static boolean ExecuteChangesSql(String sql) {
         Connection connect = DBconnection.getConnection();
         if (connect != null) {
             PreparedStatement statement = null;
             try {
                 statement = connect.prepareStatement(sql);
-                for (int i = 0; i < values.length; i++) {
-                    Object value = values[i];
-                    statement.setString(i + 1, String.valueOf(value));
-                }
+
 
                 // Ejecuta la consulta de cambios y devuelve true si se realizan con éxito
                 int filasAfectadas = statement.executeUpdate();
