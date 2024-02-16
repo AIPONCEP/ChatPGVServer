@@ -44,7 +44,7 @@ public class Server {
                 in.close();
                 out.close();
                 clientSocket.close();
-                System.out.println("Conexiones cerradas");
+                System.out.println("Conexionees cerradas");
             }
         } catch (IOException e) {
             e.printStackTrace();
