@@ -9,13 +9,15 @@ import java.net.Socket;
 
 import com.google.gson.Gson;
 import org.example.chatpgvserver.models.objects.MiObjeto;
+import org.example.chatpgvserver.models.objects.User;
+
 
 import static java.lang.System.out;
 
 public class Server {
     public static void main(String[] args) {
         try {
-            ServerSocket serverSocket = new ServerSocket(49999);
+            ServerSocket serverSocket = new ServerSocket(49899);
             out.println("Servidor en espera de conexiones...");
 
             while (true) {
@@ -29,9 +31,10 @@ public class Server {
                 // Lee la cadena JSON del cliente
                 String comando = in.readLine();
                 String json = in.readLine();
+
                 switch (comando){
                     case "Insertar":
-                        System.out.println(getData(json).getNombre());
+                        System.out.println(getDataUser(json).getName());
                         break;
 
 
@@ -48,11 +51,11 @@ public class Server {
         }
     }
 
-    public static MiObjeto getData(String json){
+    public static User getDataUser(String json){
         // Convierte el JSON a un objeto Java
         Gson gson = new Gson();
-        MiObjeto objeto = gson.fromJson(json, MiObjeto.class);
-        return objeto;
+        User user = gson.fromJson(json, User.class);
+        return user;
     }
 }
 
