@@ -56,7 +56,6 @@ public class DBconnection {
                 ResultSetMetaData metaData = resultado.getMetaData();
                 int columnCount = metaData.getColumnCount();
                 StringBuilder result = new StringBuilder();
-
                 while (resultado.next()) {
                     StringBuilder row = new StringBuilder();
                     for (int i = 1; i <= columnCount; i++) {
