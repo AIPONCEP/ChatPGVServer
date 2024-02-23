@@ -8,11 +8,11 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 import com.google.gson.Gson;
-import org.example.chatpgvserver.models.objects.MiObjeto;
 import org.example.chatpgvserver.models.objects.User;
 
 
 import static java.lang.System.out;
+import static org.example.chatpgvserver.models.DBconnection.ExecuteChangesSql;
 
 public class Server {
     public static void main(String[] args) {
@@ -35,6 +35,7 @@ public class Server {
                 switch (comando){
                     case "Insertar":
                         System.out.println(getDataUser(json).getName());
+                        ExecuteChangesSql("INSERT INTO users VALUES ('"+getDataUser(json).getName()+"', '"+getDataUser(json).getPassword()+"', '"+getDataUser(json).getTlf()+"')");
                         break;
 
 
