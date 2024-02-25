@@ -3,10 +3,10 @@ create database if not exists chatPGV;
 
 use chatPGV;
 
-create table users(
+create table usuarios(
 	id int primary key auto_increment,
-    name varchar(50), 
-    password varchar(20), 
+    nombre varchar(50),
+    contraseña varchar(20),
     tlf INT CHECK (Tlf >= 111111111 AND Tlf <= 999999999)
 );
 
@@ -18,10 +18,10 @@ create table mensajes(
     fecha datetime
 );
 
-insert into users values (default,"Jose", "123", 928666666),
+insert into usuarios values (default,"Jose", "123", 928666666),
 						 (default, "Ana", "456", 828666666),
                          (default, "Leo", "789", 928478975),
                          (default, "Luis", "PGV", 928678146),
                          (default, "Cinthya", "AED", 928327811),
                          (default, "Noelia", "PGL", 928179966);
-                       
+

@@ -8,21 +8,22 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 import com.google.gson.Gson;
+import org.example.chatpgvserver.models.objects.Message;
 import org.example.chatpgvserver.models.objects.User;
 
 
 import static java.lang.System.out;
 import static org.example.chatpgvserver.models.DBconnection.ExecuteChangesSql;
+import static org.example.chatpgvserver.models.DBconnection.consultas;
 
 public class Server {
     public static void main(String[] args) {
         try {
-            ServerSocket serverSocket = new ServerSocket(49899);
+            ServerSocket serverSocket = new ServerSocket(49898);
             out.println("Servidor en espera de conexiones...");
 
             while (true) {
                 Socket clientSocket = serverSocket.accept();
-                out.println("Cliente conectado desde: " + clientSocket.getInetAddress().getHostAddress());
 
                 // Establece flujos de entrada y salida para texto
                 BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
@@ -33,11 +34,24 @@ public class Server {
                 String json = in.readLine();
 
                 switch (comando){
-                    case "Insertar":
-                        System.out.println(getDataUser(json).getName());
-                        ExecuteChangesSql("INSERT INTO users VALUES ('"+getDataUser(json).getName()+"', '"+getDataUser(json).getPassword()+"', '"+getDataUser(json).getTlf()+"')");
+                    case "Insertar usuario":
+                        ExecuteChangesSql("INSERT INTO usuarios (nombre, contraseña, tlf) VALUES ('"
+                                +getDataUser(json).getName()+
+                                "', '"+getDataUser(json).getPassword()+
+                                "', "+getDataUser(json).getTlf()+
+                                ")");
                         break;
 
+                    case "Insertar mensaje":
+                        ExecuteChangesSql("INSERT INTO mensajes (id_remitente, id_destinatario, txt_Mensaje, fecha) VALUES ("
+                                +getDataMessage(json).getId_remitente()+
+                                ", "+getDataMessage(json).getId_destinatario()+
+                                ", '"+getDataMessage(json).getTxt_Mensaje()+"'" + // Add single quotes
+                                ", '" + getDataMessage(json).getFecha() + "')"); // Add single quotes and close parenthesis
+                        break;
+                    case "Select usuarios":
+                        out.println(consultas("SELECT nombre FROM usuarios"));
+                        break;
 
                 }
 
@@ -57,6 +71,12 @@ public class Server {
         Gson gson = new Gson();
         User user = gson.fromJson(json, User.class);
         return user;
+    }
+
+    public static Message getDataMessage(String json){
+        Gson gson = new Gson();
+        Message message = gson.fromJson(json, Message.class);
+        return message;
     }
 }
 

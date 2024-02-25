@@ -63,7 +63,7 @@ public class DBconnection {
                         Object value = resultado.getObject(columnName);
                         row.append(columnName).append(":").append(value).append(" ");
                     }
-                    result.append(row).append("\n");
+                    result.append(row);
                 }
                 DBconnection.closeConnection();
                 sentencia.close();
