@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Objects;
 
 import com.google.gson.Gson;
 import org.example.chatpgvserver.models.objects.Message;
@@ -24,12 +25,32 @@ public class Server {
 
             while (true) {
                 Socket clientSocket = serverSocket.accept();
+                out.println("Cliente conectado desde: " + clientSocket.getInetAddress().getHostAddress());
 
-                // Establece flujos de entrada y salida para texto
+                // Crear un hilo para manejar la conexión del cliente
+                Thread clientThread = new Thread(new ClientHandler(clientSocket));
+                clientThread.start();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Clase interna para manejar las solicitudes de los clientes en hilos separados
+    private static class ClientHandler implements Runnable {
+        private final Socket clientSocket;
+
+        public ClientHandler(Socket clientSocket) {
+            this.clientSocket = clientSocket;
+        }
+
+        @Override
+        public void run() {
+            try {
                 BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
                 PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
 
-                // Lee la cadena JSON del cliente
+                // Leer el comando y el JSON del cliente
                 String comando = in.readLine();
                 String json = in.readLine();
 
@@ -46,12 +67,39 @@ public class Server {
                         ExecuteChangesSql("INSERT INTO mensajes (id_remitente, id_destinatario, txt_Mensaje, fecha) VALUES ("
                                 +getDataMessage(json).getId_remitente()+
                                 ", "+getDataMessage(json).getId_destinatario()+
-                                ", '"+getDataMessage(json).getTxt_Mensaje()+"'" + // Add single quotes
-                                ", '" + getDataMessage(json).getFecha() + "')"); // Add single quotes and close parenthesis
+                                ", '"+getDataMessage(json).getTxt_Mensaje()+"'" +
+                                ", '" + getDataMessage(json).getFecha() + "')");
                         break;
+
                     case "Select usuarios":
                         out.println(consultas("SELECT nombre FROM usuarios"));
                         break;
+
+                    case "Select usuario":
+                        Gson gson = new Gson();
+                        String datos = gson.fromJson(json, String.class);
+                        System.out.println(datos);
+
+                        String[] partes = datos.split(" ");
+                        String nombre = partes[0];
+                        String contraseña = partes[1];
+
+                        // Construir la consulta SQL con las partes divididas
+                        String consultaSQL = "SELECT id FROM usuarios WHERE nombre = '" + nombre + "' AND contraseña = '" + contraseña + "'";
+
+                        // Ejecutar la consulta SQL
+                        String resultadoConsulta = consultas(consultaSQL);
+
+                        // Verificar si la consulta devuelve resultados
+                        if (resultadoConsulta != null && !resultadoConsulta.isEmpty()) {
+                            // Enviar el resultado al cliente
+                            out.println(resultadoConsulta);
+                        } else {
+                            // Enviar un mensaje al cliente indicando que no se encontraron resultados
+                            out.println("No se encontró ningún usuario con el nombre y contraseña proporcionados.");
+                        }
+                        break;
+
 
                 }
 
@@ -59,10 +107,10 @@ public class Server {
                 in.close();
                 out.close();
                 clientSocket.close();
-                System.out.println("Conexionees cerradas");
+                out.println("Conexion cerrada");
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 
