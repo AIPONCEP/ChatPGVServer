@@ -7,7 +7,8 @@ public class DBconnection {
     private static final String user = "root";
     private static final String password = "1234";
     private static Connection connect = null;
-
+    private static PreparedStatement sentencia = null;
+    private static ResultSet resultado = null;
 
     /**
      * Método para obtener una conexión a la base de datos.
@@ -44,14 +45,11 @@ public class DBconnection {
         }
     }
 
-    private static Connection con = DBconnection.getConnection();
-    private static PreparedStatement sentencia = null;
-    private static ResultSet resultado = null;
     public static String consultas(String statementSql){
-        con=DBconnection.getConnection();
-        if(con!=null){
+        connect=DBconnection.getConnection();
+        if(connect!=null){
             try {
-                sentencia = con.prepareStatement(statementSql);
+                sentencia = connect.prepareStatement(statementSql);
                 resultado = sentencia.executeQuery();
                 ResultSetMetaData metaData = resultado.getMetaData();
                 int columnCount = metaData.getColumnCount();
@@ -82,7 +80,7 @@ public class DBconnection {
      * @return boolean - True si la consulta se realizó con éxito, False en caso contrario.
      */
     public static boolean ExecuteChangesSql(String sql) {
-        Connection connect = DBconnection.getConnection();
+        connect = DBconnection.getConnection();
         if (connect != null) {
             PreparedStatement statement = null;
             try {
@@ -112,5 +110,4 @@ public class DBconnection {
         }
         return false;
     }
-
 }
