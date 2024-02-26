@@ -101,7 +101,32 @@ public class Server {
                         }
                         break;
 
+                    case  "Select mensaje":
+                        Gson gsonSms = new Gson();
+                        String datosSms = gsonSms.fromJson(json, String.class);
+                        System.out.println(datosSms);
 
+                        String[] partesSms = datosSms.split(" ");
+                        String id_remitente = partesSms[0];
+                        String id_destinatario = partesSms[1];
+
+                        String consultaMensajeSql="SELECT usuarios.nombre, mensajes.txt_Mensaje, mensajes.fecha " +
+                            "FROM mensajes " +
+                            "INNER JOIN usuarios ON mensajes.id_remitente = usuarios.id " +
+                            "WHERE mensajes.id_remitente = " + id_remitente + " " +
+                            "AND mensajes.id_destinatario = " + id_destinatario+";";
+
+                        String resultadoConsultaSms=consultas(consultaMensajeSql);
+
+                        // Verificar si la consulta devuelve resultados
+                        if (resultadoConsultaSms != null && !resultadoConsultaSms.isEmpty()) {
+                            // Enviar el resultado al cliente
+                            out.println(resultadoConsultaSms);
+                        } else {
+                            // Enviar un mensaje al cliente indicando que no se encontraron resultados
+                            out.println("Error, no se encontraron conversaciones registradas.");
+                        }
+                        break;
                 }
 
                 // Cierra las conexiones con el cliente
