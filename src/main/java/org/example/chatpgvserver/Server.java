@@ -72,7 +72,10 @@ public class Server {
                         break;
 
                     case "Select usuarios":
-                        out.println(consultas("SELECT nombre, id FROM usuarios"));
+                        Gson gsonNombre = new Gson();
+                        String datosUsuario = gsonNombre.fromJson(json, String.class);
+                        System.out.println(datosUsuario);
+                        out.println(consultas("SELECT nombre, id FROM usuarios WHERE id != " + datosUsuario.substring(3)));
                         break;
 
                     case "Select usuario":
@@ -109,14 +112,22 @@ public class Server {
                         String[] partesSms = datosSms.split(" ");
                         String id_remitente = partesSms[0];
                         String id_destinatario = partesSms[1];
-
-                        String consultaMensajeSql="SELECT usuarios.nombre, mensajes.txt_Mensaje, mensajes.fecha " +
+                        /*
+                                                String consultaMensajeSql="SELECT usuarios.nombre, mensajes.txt_Mensaje, mensajes.fecha " +
                             "FROM mensajes " +
                             "INNER JOIN usuarios ON mensajes.id_remitente = usuarios.id " +
                             "WHERE mensajes.id_remitente = " + id_remitente + " " +
                             "AND mensajes.id_destinatario = " + id_destinatario+";";
+                         */
+                        // Consulta SQL para obtener todos los mensajes entre dos usuarios
+                        String consultaMensajeSql = "SELECT usuarios.nombre, mensajes.txt_Mensaje " +
+                                "FROM mensajes " +
+                                "INNER JOIN usuarios ON mensajes.id_remitente = usuarios.id " +
+                                "WHERE (mensajes.id_remitente = " + id_remitente + " AND mensajes.id_destinatario = " + id_destinatario + ") " +
+                                "OR (mensajes.id_remitente = " + id_destinatario + " AND mensajes.id_destinatario = " + id_remitente + ")";
 
-                        String resultadoConsultaSms=consultas(consultaMensajeSql);
+                        String resultadoConsultaSms = consultas(consultaMensajeSql);
+                        System.out.println(resultadoConsultaSms);
 
                         // Verificar si la consulta devuelve resultados
                         if (resultadoConsultaSms != null && !resultadoConsultaSms.isEmpty()) {
