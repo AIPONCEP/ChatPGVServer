@@ -6,18 +6,15 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Objects;
-
 import com.google.gson.Gson;
 import org.example.chatpgvserver.models.objects.Message;
 import org.example.chatpgvserver.models.objects.User;
-
-
 import static java.lang.System.out;
 import static org.example.chatpgvserver.models.DBconnection.ExecuteChangesSql;
 import static org.example.chatpgvserver.models.DBconnection.consultas;
 
 /**
+ * @author Jose David Falcon, Ana Isabel Ponce Pérez
  * Clase Server
  * Representa el servidor de chat.
  */
