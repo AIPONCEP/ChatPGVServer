@@ -72,7 +72,7 @@ public class Server {
                         break;
 
                     case "Select usuarios":
-                        out.println(consultas("SELECT nombre FROM usuarios"));
+                        out.println(consultas("SELECT nombre, id FROM usuarios"));
                         break;
 
                     case "Select usuario":
@@ -89,6 +89,7 @@ public class Server {
 
                         // Ejecutar la consulta SQL
                         String resultadoConsulta = consultas(consultaSQL);
+
 
                         // Verificar si la consulta devuelve resultados
                         if (resultadoConsulta != null && !resultadoConsulta.isEmpty()) {
