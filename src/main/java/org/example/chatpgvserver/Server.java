@@ -17,13 +17,19 @@ import static java.lang.System.out;
 import static org.example.chatpgvserver.models.DBconnection.ExecuteChangesSql;
 import static org.example.chatpgvserver.models.DBconnection.consultas;
 
+/**
+ * Clase Server
+ * Representa el servidor de chat.
+ */
 public class Server {
     public static void main(String[] args) {
         try {
+            // Se crea un socket servidor en el puerto 49898
             ServerSocket serverSocket = new ServerSocket(49898);
             out.println("Servidor en espera de conexiones...");
 
             while (true) {
+                // Aceptar la conexión del cliente
                 Socket clientSocket = serverSocket.accept();
                 out.println("Cliente conectado desde: " + clientSocket.getInetAddress().getHostAddress());
 
@@ -36,10 +42,17 @@ public class Server {
         }
     }
 
-    // Clase interna para manejar las solicitudes de los clientes en hilos separados
+    /**
+     * Clase interna ClientHandler
+     * Maneja las solicitudes de los clientes en hilos separados.
+     */
     private static class ClientHandler implements Runnable {
         private final Socket clientSocket;
 
+        /**
+         * Constructor de la clase ClientHandler.
+         * @param clientSocket Socket del cliente.
+         */
         public ClientHandler(Socket clientSocket) {
             this.clientSocket = clientSocket;
         }
@@ -47,6 +60,7 @@ public class Server {
         @Override
         public void run() {
             try {
+                // Crear streams de entrada y salida para la comunicación con el cliente
                 BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
                 PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
 
@@ -54,8 +68,10 @@ public class Server {
                 String comando = in.readLine();
                 String json = in.readLine();
 
+                // Procesar la solicitud del cliente según el comando recibido
                 switch (comando){
                     case "Insertar usuario":
+                        // Insertar usuario en la base de datos
                         ExecuteChangesSql("INSERT INTO usuarios (nombre, contraseña, tlf) VALUES ('"
                                 +getDataUser(json).getName()+
                                 "', '"+getDataUser(json).getPassword()+
@@ -64,6 +80,7 @@ public class Server {
                         break;
 
                     case "Insertar mensaje":
+                        // Insertar mensaje en la base de datos
                         ExecuteChangesSql("INSERT INTO mensajes (id_remitente, id_destinatario, txt_Mensaje, fecha) VALUES ("
                                 +getDataMessage(json).getId_remitente()+
                                 ", "+getDataMessage(json).getId_destinatario()+
@@ -72,6 +89,7 @@ public class Server {
                         break;
 
                     case "Select usuarios":
+                        // Seleccionar usuarios de la base de datos
                         Gson gsonNombre = new Gson();
                         String datosUsuario = gsonNombre.fromJson(json, String.class);
                         System.out.println(datosUsuario);
@@ -79,6 +97,7 @@ public class Server {
                         break;
 
                     case "Select usuario":
+                        // Seleccionar un usuario de la base de datos
                         Gson gson = new Gson();
                         String datos = gson.fromJson(json, String.class);
                         System.out.println(datos);
@@ -93,7 +112,6 @@ public class Server {
                         // Ejecutar la consulta SQL
                         String resultadoConsulta = consultas(consultaSQL);
 
-
                         // Verificar si la consulta devuelve resultados
                         if (resultadoConsulta != null && !resultadoConsulta.isEmpty()) {
                             // Enviar el resultado al cliente
@@ -105,6 +123,7 @@ public class Server {
                         break;
 
                     case  "Select mensaje":
+                        // Seleccionar mensajes de la base de datos
                         Gson gsonSms = new Gson();
                         String datosSms = gsonSms.fromJson(json, String.class);
                         System.out.println(datosSms);
@@ -112,13 +131,7 @@ public class Server {
                         String[] partesSms = datosSms.split(" ");
                         String id_remitente = partesSms[0];
                         String id_destinatario = partesSms[1];
-                        /*
-                                                String consultaMensajeSql="SELECT usuarios.nombre, mensajes.txt_Mensaje, mensajes.fecha " +
-                            "FROM mensajes " +
-                            "INNER JOIN usuarios ON mensajes.id_remitente = usuarios.id " +
-                            "WHERE mensajes.id_remitente = " + id_remitente + " " +
-                            "AND mensajes.id_destinatario = " + id_destinatario+";";
-                         */
+
                         // Consulta SQL para obtener todos los mensajes entre dos usuarios
                         String consultaMensajeSql = "SELECT usuarios.nombre, mensajes.txt_Mensaje " +
                                 "FROM mensajes " +
@@ -151,6 +164,12 @@ public class Server {
         }
     }
 
+    /**
+     * Método getDataUser
+     * para obtener un objeto User a partir de un JSON.
+     * @param json El JSON que contiene los datos del usuario.
+     * @return Un objeto User creado a partir del JSON.
+     */
     public static User getDataUser(String json){
         // Convierte el JSON a un objeto Java
         Gson gson = new Gson();
@@ -158,6 +177,12 @@ public class Server {
         return user;
     }
 
+    /**
+     * Método getDataMessage
+     * para obtener un objeto Message a partir de un JSON.
+     * @param json El JSON que contiene los datos del mensaje.
+     * @return Un objeto Message creado a partir del JSON.
+     */
     public static Message getDataMessage(String json){
         Gson gson = new Gson();
         Message message = gson.fromJson(json, Message.class);

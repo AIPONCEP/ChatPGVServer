@@ -45,6 +45,11 @@ public class DBconnection {
         }
     }
 
+    /**
+     * Ejecuta una consulta SQL y devuelve el resultado como una cadena de texto.
+     * @param statementSql La declaración SQL a ejecutar.
+     * @return Una cadena de texto que representa el resultado de la consulta.
+     */
     public static String consultas(String statementSql){
         connect=DBconnection.getConnection();
         if(connect!=null){
