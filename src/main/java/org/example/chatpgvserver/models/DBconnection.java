@@ -5,7 +5,7 @@ import java.sql.*;
 public class DBconnection {
     private static final String url = "jdbc:mysql://localhost:3306/chatPGV";
     private static final String user = "root";
-    private static final String password = "12345";
+    private static final String password = "1234";
     private static Connection connect = null;
     private static PreparedStatement sentencia = null;
     private static ResultSet resultado = null;
